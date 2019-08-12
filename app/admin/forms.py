@@ -1,6 +1,7 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField
+from wtforms import StringField, SubmitField, DateField, BooleanField, DecimalField
 from wtforms.validators import DataRequired
+from wtforms import validators
 from wtforms.ext.sqlalchemy.fields import QuerySelectField
 
 from ..models import Department, Role
@@ -30,4 +31,18 @@ class EmployeeAssignForm(FlaskForm):
                                   get_label="name")
     role = QuerySelectField(query_factory=lambda: Role.query.all(),
                             get_label="name")
+    submit = SubmitField('Submit')
+
+class AnchorForm(FlaskForm):
+    """
+    Form for detailed employee information
+    """
+    name = StringField('Name', validators=[DataRequired()])
+    entry_time = DateField('Entry Date', format='%Y-%m-%d')
+    basic_salary_or_not = BooleanField('Whether the employee with basic salary', validators=[validators.Optional()])
+    basic_salary = DecimalField('Basic Salary', validators=[validators.Optional()])
+    percentage = DecimalField('Proportion of Commission', validators=[validators.Optional()])
+    total_paid = DecimalField('Total Paid', default=0)
+    owned_salary = DecimalField('Salary Due', default=0)
+    #photo = FileField(validators=[FileRequired()])
     submit = SubmitField('Submit')

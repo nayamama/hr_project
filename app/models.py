@@ -1,6 +1,9 @@
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 
+#from flask_appbuilder import Model
+#from flask_appbuilder.models.mixins import ImageColumn
+
 from app import db, login_manager
 
 
@@ -84,4 +87,25 @@ class Role(db.Model):
 
     def __repr__(self):
         return '<Role: {}>'.format(self.name)
+
+class Anchor(db.Model):
+    """
+    Create an Anchor table
+    """
+
+    __tablename__ = 'anchors'
+
+    id = db.Column(db.Integer, primary_key=True)
+    #email = db.Column(db.String(60), index=True, unique=True)
+    name = db.Column(db.String(60), index=True, unique=True)
+    entry_time = db.Column(db.DateTime, nullable=False)
+    basic_salary_or_not = db.Column(db.Boolean)
+    basic_salary = db.Column(db.Float, nullable=True)
+    percentage = db.Column(db.Float, default=0.0, nullable=True)
+    total_paid = db.Column(db.Float, default=0.0)
+    owned_salary = db.Column(db.Float, default=0.0)
+    #photo = db.Column(ImageColumn)
+
+    def __repr__(self):
+        return '<Anchor: {}>'.format(self.name)
 

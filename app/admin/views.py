@@ -2,9 +2,9 @@ from flask import abort, flash, redirect, render_template, url_for
 from flask_login import current_user, login_required
 
 from . import admin
-from forms import DepartmentForm, RoleForm, EmployeeAssignForm
+from forms import DepartmentForm, RoleForm, EmployeeAssignForm, AnchorForm
 from .. import db
-from ..models import Department, Role, Employee
+from ..models import Department, Role, Employee, Anchor
 
 
 def check_admin():
@@ -242,3 +242,86 @@ def assign_employee(id):
     return render_template('admin/employees/employee.html',
                            employee=employee, form=form,
                            title='Assign Employee')
+
+@admin.route('/anchors')
+@login_required
+def list_anchors():
+    check_admin()
+    """
+    List all anchors
+    """
+    anchors = Anchor.query.all()
+    return render_template('admin/anchors/anchors.html',
+                           anchors=anchors, title='Anchors')
+
+@admin.route('/anchors/add', methods=['GET', 'POST'])
+@login_required
+def add_anchor():
+    """
+    Add an anchor to the database
+    """
+    check_admin()
+
+    add_anchor = True
+
+    form = AnchorForm()
+    if form.validate_on_submit():
+        anchor = Anchor(name=form.name.data,
+                        entry_time=form.entry_time.data,
+                        basic_salary_or_not=form.basic_salary_or_not.data,
+                        basic_salary=form.basic_salary.data,
+                        percentage=form.percentage.data)
+                        #total_paid=form.total_paid.data,
+                        #owned_salary=form.owned_salary.data
+
+        try:
+            db.session.add(anchor)
+            db.session.commit()
+            flash('You have successfully added a new anchor.')
+        except:
+            flash('Error: anchor name already exists.')
+
+        return redirect(url_for('admin.list_anchors'))
+
+    # load anchor template
+    return render_template('admin/anchors/anchor.html', action="Add",
+                           add_anchor=add_anchor, form=form,
+                           title="Add Anchor")
+
+@admin.route('/anchors/edit/<int:id>', methods=['GET', 'POST'])
+@login_required
+def edit_anchor(id):
+    """
+    Edit an anchor
+    """
+    check_admin()
+
+    add_anchor = False
+
+    anchor = Anchor.query.get_or_404(id)
+    form = AnchorForm(obj=anchor)
+    if form.validate_on_submit():
+        anchor.name = form.name.data
+        anchor.entry_time = form.entry_time.data
+        anchor.basic_salary_or_not = form.basic_salary_or_not.data
+        anchor.basic_salary = form.basic_salary.data
+        anchor.percentage = form.percentage.data
+        anchor.total_paid = form.total_paid.data
+        anchor.owned_salary = form.owned_salary.data
+        db.session.add(anchor)
+        db.session.commit()
+        flash('You have successfully edited the anchor.')
+
+        # redirect to the anchors page
+        return redirect(url_for('admin.list_anchors'))
+
+    form.name.data = anchor.name
+    form.entry_time.data = anchor.entry_time
+    form.basic_salary_or_not = anchor.basic_salary_or_not
+    form.basic_salary = anchor.basic_salary
+    form.percentage = anchor.percentage
+    form.total_paid = anchor.total_paid
+    form.owned_salary = anchor.owned_salary
+    return render_template('admin/anchors/anchor.html', add_anchor=add_anchor,
+                           form=form, title="Edit Anchor")
+
