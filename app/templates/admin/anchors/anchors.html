@@ -54,9 +54,13 @@
             <h3> No anchors have been added. </h3>
             <hr class="intro-divider">
         {% endif %}
-          <a href="{{ url_for('admin.add_anchor') }}" class="btn btn-default btn-lg">
+          <a href="{{ url_for('admin.add_salary_anchor') }}" class="btn btn-default btn-lg">
             <i class="fa fa-plus"></i>
-            Add Anchor
+            Add Anchor with Salary
+          </a>
+          <a href="{{ url_for('admin.add_commission_anchor') }}" class="btn btn-default btn-lg">
+            <i class="fa fa-plus"></i>
+            Add Anchor with Commission
           </a>
         </div>
       </div>

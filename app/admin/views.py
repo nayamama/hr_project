@@ -254,23 +254,27 @@ def list_anchors():
     return render_template('admin/anchors/anchors.html',
                            anchors=anchors, title='Anchors')
 
-@admin.route('/anchors/add', methods=['GET', 'POST'])
+@admin.route('/anchors/add_salary_anchor', methods=['GET', 'POST'])
 @login_required
-def add_anchor():
+def add_salary_anchor():
     """
-    Add an anchor to the database
+    Add an anchor with salary to the database
     """
     check_admin()
 
-    add_anchor = True
+    add_anchor = "anchor_with_salary"
 
     form = AnchorForm()
+    del form.basic_salary_or_not
+    del form.percentage
+
     if form.validate_on_submit():
         anchor = Anchor(name=form.name.data,
                         entry_time=form.entry_time.data,
-                        basic_salary_or_not=form.basic_salary_or_not.data,
-                        basic_salary=form.basic_salary.data,
-                        percentage=form.percentage.data)
+                        #basic_salary_or_not=form.basic_salary_or_not.data
+                        basic_salary_or_not=True,
+                        basic_salary=form.basic_salary.data)
+                        #percentage=form.percentage.data
                         #total_paid=form.total_paid.data,
                         #owned_salary=form.owned_salary.data
 
@@ -286,7 +290,41 @@ def add_anchor():
     # load anchor template
     return render_template('admin/anchors/anchor.html', action="Add",
                            add_anchor=add_anchor, form=form,
-                           title="Add Anchor")
+                           title="Add Anchor with Salary")
+
+@admin.route('/anchors/add_commission_anchor', methods=['GET', 'POST'])
+@login_required
+def add_commission_anchor():
+    """
+    Add an anchor with commission to the database
+    """
+    check_admin()
+
+    add_anchor = "anchor_with_commission"
+
+    form = AnchorForm()
+    del form.basic_salary
+    del form.basic_salary_or_not
+
+    if form.validate_on_submit():
+        anchor = Anchor(
+            name=form.name.data,
+            entry_time=form.entry_time.data,
+            basic_salary_or_not=False,
+            percentage=form.percentage.data
+        )
+        try:
+            db.session.add(anchor)
+            db.session.commit()
+            flash('You have successfully added a new anchor.')
+        except:
+            flash('Error: anchor name already exists.')
+
+        return redirect(url_for('admin.list_anchors'))
+
+    return render_template('admin/anchors/anchor.html', action="Add",
+                           add_anchor=add_anchor, form=form,
+                           title="Add Anchor with Commission")
 
 @admin.route('/anchors/edit/<int:id>', methods=['GET', 'POST'])
 @login_required
