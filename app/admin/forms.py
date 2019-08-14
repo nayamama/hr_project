@@ -46,3 +46,10 @@ class AnchorForm(FlaskForm):
     owned_salary = DecimalField('Salary Due', default=0)
     #photo = FileField(validators=[FileRequired()])
     submit = SubmitField('Submit')
+
+class SearchForm(FlaskForm):
+    """
+    Form for searching anchor information
+    """
+    search = StringField('please input the anchor name')
+    submit = SubmitField('Search')

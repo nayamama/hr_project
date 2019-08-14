@@ -1,8 +1,8 @@
-from flask import abort, flash, redirect, render_template, url_for
+from flask import abort, flash, redirect, render_template, url_for, request
 from flask_login import current_user, login_required
 
 from . import admin
-from forms import DepartmentForm, RoleForm, EmployeeAssignForm, AnchorForm
+from forms import DepartmentForm, RoleForm, EmployeeAssignForm, AnchorForm, SearchForm
 from .. import db
 from ..models import Department, Role, Employee, Anchor
 
@@ -362,4 +362,30 @@ def edit_anchor(id):
     form.owned_salary = anchor.owned_salary
     return render_template('admin/anchors/anchor.html', add_anchor=add_anchor,
                            form=form, title="Edit Anchor")
+
+@admin.route('/search', methods=['GET', 'POST'])
+@login_required
+def search():
+    """
+    Search the anchor information
+    """
+    check_admin()
+    form = SearchForm(request.form)
+    if request.method == "POST" and form.validate_on_submit():
+        return redirect((url_for('admin.search_result', query=form.search.data)))
+    return render_template('admin/search/search.html', form=form)
+
+
+@admin.route('/results/<query>')
+@login_required
+def search_result(query):
+    result = Anchor.query.filter_by(name=query).first()
+    if not result:
+        flash('No results found.')
+        return redirect(url_for('admin.search'))
+    else:
+        form = AnchorForm(obj=result)
+        name = form.name.data
+        del form.submit
+        return render_template('admin/search/result.html', query=query, form=form, name=name)
 

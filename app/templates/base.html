@@ -17,7 +17,8 @@
                   <span class="icon-bar"></span>
                   <span class="icon-bar"></span>
               </button>
-              <a class="navbar-brand topnav" href="{{ url_for('home.homepage') }}">Qi's Small Project</a>
+              <!--<a class="navbar-brand topnav" href="{{ url_for('home.homepage') }}">Qi's Small Project</a>-->
+              <a class="navbar-brand topnav" href="{{ url_for('admin.search') }}"><i class="fa fa-search"></i></a>
           </div>
           <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
               <ul class="nav navbar-nav navbar-right">
@@ -28,6 +29,7 @@
                         <li><a href="{{ url_for('admin.list_roles') }}">Roles</a></li>
                         <li><a href="{{ url_for('admin.list_employees') }}">Employees</a></li>
                         <li><a href="{{ url_for('admin.list_anchors') }}">Anchors</a></li>
+                        <!--<li class="w3-xxxlarge"><a href="{{ url_for('admin.search') }}"><i class="fa fa-search"></i>Search</a></li>-->
                     {% else %}
                         <li><a href="{{ url_for('home.dashboard') }}">Dashboard</a></li>
                     {% endif %}
