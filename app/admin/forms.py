@@ -1,4 +1,5 @@
 from flask_wtf import FlaskForm
+from flask_wtf.file import FileField, FileRequired
 from wtforms import StringField, SubmitField, DateField, BooleanField, DecimalField
 from wtforms.validators import DataRequired
 from wtforms import validators
@@ -45,6 +46,7 @@ class AnchorForm(FlaskForm):
     total_paid = DecimalField('Total Paid', default=0)
     owned_salary = DecimalField('Salary Due', default=0)
     #photo = FileField(validators=[FileRequired()])
+    photo = FileField()
     submit = SubmitField('Submit')
 
 class SearchForm(FlaskForm):

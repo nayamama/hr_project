@@ -1,5 +1,7 @@
+import os
 from flask import abort, flash, redirect, render_template, url_for, request
 from flask_login import current_user, login_required
+from werkzeug.utils import secure_filename
 
 from . import admin
 from forms import DepartmentForm, RoleForm, EmployeeAssignForm, AnchorForm, SearchForm
@@ -265,8 +267,11 @@ def add_salary_anchor():
     add_anchor = "anchor_with_salary"
 
     form = AnchorForm()
+
+    # remove no-relative fields
     del form.basic_salary_or_not
     del form.percentage
+    del form.photo
 
     if form.validate_on_submit():
         anchor = Anchor(name=form.name.data,
@@ -281,6 +286,11 @@ def add_salary_anchor():
         try:
             db.session.add(anchor)
             db.session.commit()
+
+            # create folder to store personal image files
+            directory = '/home/qi/projects/maomao_files/' + form.name.data
+            if not os.path.exists(directory):
+                os.mkdir(directory)
             flash('You have successfully added a new anchor.')
         except:
             flash('Error: anchor name already exists.')
@@ -305,6 +315,7 @@ def add_commission_anchor():
     form = AnchorForm()
     del form.basic_salary
     del form.basic_salary_or_not
+    del form.photo
 
     if form.validate_on_submit():
         anchor = Anchor(
@@ -316,6 +327,11 @@ def add_commission_anchor():
         try:
             db.session.add(anchor)
             db.session.commit()
+
+            directory = '/home/qi/projects/maomao_files/' + form.name.data
+            if not os.path.exists(directory):
+                os.mkdir(directory)
+
             flash('You have successfully added a new anchor.')
         except:
             flash('Error: anchor name already exists.')
@@ -346,6 +362,14 @@ def edit_anchor(id):
         anchor.percentage = form.percentage.data
         anchor.total_paid = form.total_paid.data
         anchor.owned_salary = form.owned_salary.data
+
+        # save image file
+        if form.photo.data:
+            f = form.photo.data
+            filename = secure_filename(f.filename)
+            UPLOAD_FOLDER = '/home/qi/projects/maomao_files'
+            f.save(os.path.join(UPLOAD_FOLDER, form.name.data, filename))
+
         db.session.add(anchor)
         db.session.commit()
         flash('You have successfully edited the anchor.')
