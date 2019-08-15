@@ -7,6 +7,7 @@ from . import admin
 from forms import DepartmentForm, RoleForm, EmployeeAssignForm, AnchorForm, SearchForm
 from .. import db
 from ..models import Department, Role, Employee, Anchor
+from helper import get_system_info
 
 
 def check_admin():
@@ -413,3 +414,8 @@ def search_result(query):
         del form.submit
         return render_template('admin/search/result.html', query=query, form=form, name=name)
 
+@admin.route('/system')
+@login_required
+def system_info():
+    used_cpu_percent, used_disk_percent, free_disk_size = get_system_info()
+    return render_template('admin/system.html', cpu=used_cpu_percent, disk=used_disk_percent, free=free_disk_size)
