@@ -18,12 +18,13 @@
                 <tr>
                   <th width="10%"> Name </th>
                   <th width="20%"> Entry Time </th>
-                  <th width="20%"> with Basic Salary</th>
+                  <th width="10%"> with Basic Salary</th>
                   <th width="10%"> Basic Salary </th>
                   <th width="10%"> Percentage </th>
 									<th width="10%"> Total Paid </th>
 									<th width="10%"> Salary Due </th>
 									<th width="10%"> Edit </th>
+                  <th width="10%"> Delete </th>
                 </tr>
               </thead>
               <tbody>
@@ -41,6 +42,11 @@
                   <td>
                     <a href="{{ url_for('admin.edit_anchor', id=anchor.id) }}">
                       <i class="fa fa-pencil"></i> Edit 
+                    </a>
+                  </td>
+                  <td>
+                    <a href="{{ url_for('admin.delete_anchor', id=anchor.id, action='request', name=anchor.name) }}">
+                      <i class="fa fa-trash"></i> Delete 
                     </a>
                   </td>
                 </tr>
