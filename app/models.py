@@ -104,8 +104,20 @@ class Anchor(db.Model):
     percentage = db.Column(db.Float, default=0.0, nullable=True)
     total_paid = db.Column(db.Float, default=0.0)
     owned_salary = db.Column(db.Float, default=0.0)
-    #photo = db.Column(ImageColumn)
+    payroll_id = db.Column(db.Integer, db.ForeignKey('payrolls.id'))
 
     def __repr__(self):
         return '<Anchor: {}>'.format(self.name)
+
+class Payroll(db.Model):
+    """
+    Create a payroll table
+    """
+    __tablename__ = "payrolls"
+
+    id = db.Column(db.Integer, primary_key=True)
+    date = db.Column(db.DateTime, nullable=False)
+    amount = db.Column(db.Float, default=0.0, nullable=True)
+    employees = db.relationship('Anchor', backref='payroll',
+                                lazy='dynamic')
 

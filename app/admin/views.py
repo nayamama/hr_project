@@ -387,14 +387,7 @@ def edit_anchor(id):
     form.owned_salary = anchor.owned_salary
     return render_template('admin/anchors/anchor.html', add_anchor=add_anchor,
                            form=form, title="Edit Anchor")
-"""
-@admin.route('/anchors/delete/<int:id>/<string:action>', methods=['GET', 'POST'])
-@login_required
-def delete_anchor_request(id):
-    check_admin()
-    # redirect to the roles page
-    return redirect(url_for('admin.list_anchors'), id=)
-"""
+
 
 @admin.route('/anchors/delete/<int:id>/<string:name>/<string:action>', methods=['GET', 'POST'])
 @login_required
