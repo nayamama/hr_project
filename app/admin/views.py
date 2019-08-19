@@ -345,7 +345,7 @@ def add_commission_anchor():
 @login_required
 def add_anchor():
     """
-    Add an anchor with commission to the database
+    Add an anchor to the database
     """
     check_admin()
 
@@ -405,11 +405,16 @@ def edit_anchor(id):
     if form.validate_on_submit():
         anchor.name = form.name.data
         anchor.entry_time = form.entry_time.data
+        anchor.address = form.address.data
+        anchor.momo_number = form.momo_number.data
+        anchor.mobile_number = form.mobile_number.data
+        anchor.id_number = form.id_number.data
         anchor.basic_salary_or_not = form.basic_salary_or_not.data
         anchor.basic_salary = form.basic_salary.data
-        anchor.percentage = form.percentage.data
-        anchor.total_paid = form.total_paid.data
-        anchor.owned_salary = form.owned_salary.data
+        anchor.live_time=form.live_time.data
+        anchor.live_session=form.live_session.data
+        anchor.percentage=form.percentage.data
+        anchor.ace_anchor_or_not=form.ace_anchor_or_not.data
 
         # save image file
         if form.photo.data:
@@ -427,11 +432,17 @@ def edit_anchor(id):
 
     form.name.data = anchor.name
     form.entry_time.data = anchor.entry_time
-    form.basic_salary_or_not = anchor.basic_salary_or_not
-    form.basic_salary = anchor.basic_salary
-    form.percentage = anchor.percentage
-    form.total_paid = anchor.total_paid
-    form.owned_salary = anchor.owned_salary
+    form.address.data = anchor.address
+    form.momo_number.data = anchor.momo_number
+    form.mobile_number.data = anchor.mobile_number
+    form.id_number.data = anchor.id_number
+    form.basic_salary_or_not.data = anchor.basic_salary_or_not
+    form.basic_salary.data = anchor.basic_salary
+    form.live_time.data = anchor.live_time
+    form.live_session.data = anchor.live_session
+    form.percentage.data = anchor.percentage
+    form.ace_anchor_or_not.data = anchor.ace_anchor_or_not
+    
     return render_template('admin/anchors/anchor.html', add_anchor=add_anchor,
                            form=form, title="Edit Anchor")
 
@@ -479,6 +490,7 @@ def search_result(query):
         form = AnchorForm(obj=result)
         name = form.name.data
         del form.submit
+        del form.photo
         return render_template('admin/search/result.html', query=query, form=form, name=name)
 
 @admin.route('/system')
