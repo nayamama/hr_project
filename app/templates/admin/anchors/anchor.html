@@ -13,10 +13,8 @@
     <div class="middle">
       <div class="inner">
         <div class="center">
-            {% if add_anchor == "anchor_with_salary" %}
-                <h1>Add Anchor with Salary</h1>
-            {% elif add_anchor == "anchor_with_commission" %}
-                <h1>Add Anchor with Commission</h1>
+            {% if add_anchor %}
+                <h1>Add Anchor</h1>
             {% else %}
                 <h1>Edit Anchor</h1>
             {% endif %}

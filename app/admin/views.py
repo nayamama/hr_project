@@ -2,6 +2,7 @@ import os
 from flask import abort, flash, redirect, render_template, url_for, request
 from flask_login import current_user, login_required
 from werkzeug.utils import secure_filename
+import datetime
 
 from . import admin
 from forms import DepartmentForm, RoleForm, EmployeeAssignForm, AnchorForm, SearchForm
@@ -256,13 +257,11 @@ def list_anchors():
     anchors = Anchor.query.all()
     return render_template('admin/anchors/anchors.html',
                            anchors=anchors, title='Anchors')
-
+"""
 @admin.route('/anchors/add_salary_anchor', methods=['GET', 'POST'])
 @login_required
 def add_salary_anchor():
-    """
-    Add an anchor with salary to the database
-    """
+    
     check_admin()
 
     add_anchor = "anchor_with_salary"
@@ -306,9 +305,7 @@ def add_salary_anchor():
 @admin.route('/anchors/add_commission_anchor', methods=['GET', 'POST'])
 @login_required
 def add_commission_anchor():
-    """
-    Add an anchor with commission to the database
-    """
+    
     check_admin()
 
     add_anchor = "anchor_with_commission"
@@ -342,6 +339,56 @@ def add_commission_anchor():
     return render_template('admin/anchors/anchor.html', action="Add",
                            add_anchor=add_anchor, form=form,
                            title="Add Anchor with Commission")
+"""
+
+@admin.route('/anchors/add_anchor', methods=['GET', 'POST'])
+@login_required
+def add_anchor():
+    """
+    Add an anchor with commission to the database
+    """
+    check_admin()
+
+    add_anchor = True
+
+    form = AnchorForm()
+    del form.photo
+    del form.entry_time
+    #del form.live_session
+
+    if form.validate_on_submit():
+        anchor = Anchor(
+            name=form.name.data,
+            entry_time=datetime.datetime.now().strftime("%Y-%m-%d"),
+            address=form.address.data,
+            momo_number=form.momo_number.data,
+            mobile_number=form.mobile_number.data,
+            id_number=form.id_number.data,
+            basic_salary_or_not=form.basic_salary_or_not.data,
+            basic_salary=form.basic_salary.data,
+            live_time=form.live_time.data,
+            live_session=form.live_session.data,
+            percentage=form.percentage.data,
+            ace_anchor_or_not=form.ace_anchor_or_not.data
+        )
+        try:
+            db.session.add(anchor)
+            db.session.commit()
+
+            directory = '/home/qi/projects/maomao_files/' + form.momo_number.data
+            if not os.path.exists(directory):
+                os.mkdir(directory)
+
+            flash('You have successfully added a new anchor.')
+        except Exception as e:
+            #flash('Error: anchor name already exists.')
+            flash(e)
+
+        return redirect(url_for('admin.list_anchors'))
+
+    return render_template('admin/anchors/anchor.html', action="Add",
+                           add_anchor=add_anchor, form=form,
+                           title="Add Anchor")
 
 @admin.route('/anchors/edit/<int:id>', methods=['GET', 'POST'])
 @login_required

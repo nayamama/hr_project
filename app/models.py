@@ -97,13 +97,20 @@ class Anchor(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     #email = db.Column(db.String(60), index=True, unique=True)
-    name = db.Column(db.String(60), index=True, unique=True)
+    name = db.Column(db.String(60), index=True, nullable=False)
     entry_time = db.Column(db.DateTime, nullable=False)
+    address = db.Column(db.String(120))
+    momo_number = db.Column(db.String(60), index=True, nullable=True)
+    mobile_number = db.Column(db.String(60), nullable=False)
+    id_number = db.Column(db.String(60), nullable=False)
     basic_salary_or_not = db.Column(db.Boolean)
     basic_salary = db.Column(db.Float, nullable=True)
+    live_time = db.Column(db.Float, nullable=True)
+    live_session = db.Column(db.String(60), nullable=True)
     percentage = db.Column(db.Float, default=0.0, nullable=True)
-    total_paid = db.Column(db.Float, default=0.0)
-    owned_salary = db.Column(db.Float, default=0.0)
+    #total_paid = db.Column(db.Float, default=0.0)
+    #owned_salary = db.Column(db.Float, default=0.0)
+    ace_anchor_or_not = db.Column(db.Boolean)
     payroll_id = db.Column(db.Integer, db.ForeignKey('payrolls.id'))
 
     def __repr__(self):
@@ -117,7 +124,9 @@ class Payroll(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     date = db.Column(db.DateTime, nullable=False)
-    amount = db.Column(db.Float, default=0.0, nullable=True)
+    profit = db.Column(db.Float, default=0.0, nullable=True)
+    commission = db.Column(db.Float, default=0.0, nullable=True)
+    salary = db.Column(db.Float, default=0.0, nullable=True)
     employees = db.relationship('Anchor', backref='payroll',
                                 lazy='dynamic')
 
