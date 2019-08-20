@@ -53,6 +53,7 @@ class AnchorForm(FlaskForm):
     )
     percentage = DecimalField('Proportion of Commission', validators=[validators.Optional()])
     ace_anchor_or_not = BooleanField('Whether Ace anchor or not', validators=[validators.Optional()])
+    agent = StringField('Agent', validators=[validators.optional()])
     #total_paid = DecimalField('Total Paid', default=0)
     #owned_salary = DecimalField('Salary Due', default=0)
     #photo = FileField(validators=[FileRequired()])

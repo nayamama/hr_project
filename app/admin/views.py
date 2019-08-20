@@ -369,7 +369,8 @@ def add_anchor():
             live_time=form.live_time.data,
             live_session=form.live_session.data,
             percentage=form.percentage.data,
-            ace_anchor_or_not=form.ace_anchor_or_not.data
+            ace_anchor_or_not=form.ace_anchor_or_not.data,
+            agent = form.agent.data
         )
         try:
             db.session.add(anchor)
@@ -415,6 +416,7 @@ def edit_anchor(id):
         anchor.live_session=form.live_session.data
         anchor.percentage=form.percentage.data
         anchor.ace_anchor_or_not=form.ace_anchor_or_not.data
+        anchor.agent = form.agent.data
 
         # save image file
         if form.photo.data:
@@ -442,6 +444,7 @@ def edit_anchor(id):
     form.live_session.data = anchor.live_session
     form.percentage.data = anchor.percentage
     form.ace_anchor_or_not.data = anchor.ace_anchor_or_not
+    form.agent.data = anchor.agent
     
     return render_template('admin/anchors/anchor.html', add_anchor=add_anchor,
                            form=form, title="Edit Anchor")

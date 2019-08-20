@@ -98,11 +98,11 @@ class Anchor(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     #email = db.Column(db.String(60), index=True, unique=True)
     name = db.Column(db.String(60), index=True, nullable=False)
-    entry_time = db.Column(db.DateTime, nullable=False)
+    entry_time = db.Column(db.DateTime, nullable=True)
     address = db.Column(db.String(120))
     momo_number = db.Column(db.String(60), index=True, nullable=True)
-    mobile_number = db.Column(db.String(60), nullable=False)
-    id_number = db.Column(db.String(60), nullable=False)
+    mobile_number = db.Column(db.String(60), nullable=True)
+    id_number = db.Column(db.String(60), nullable=True)
     basic_salary_or_not = db.Column(db.Boolean)
     basic_salary = db.Column(db.Float, nullable=True)
     live_time = db.Column(db.Float, nullable=True)
@@ -111,6 +111,7 @@ class Anchor(db.Model):
     #total_paid = db.Column(db.Float, default=0.0)
     #owned_salary = db.Column(db.Float, default=0.0)
     ace_anchor_or_not = db.Column(db.Boolean)
+    agent = db.Column(db.String(60), nullable=True)
     payroll_id = db.Column(db.Integer, db.ForeignKey('payrolls.id'))
 
     def __repr__(self):

@@ -60,7 +60,8 @@ def add_anchor():
             live_time=form.live_time.data,
             live_session=form.live_session.data,
             percentage=form.percentage.data,
-            ace_anchor_or_not=form.ace_anchor_or_not.data
+            ace_anchor_or_not=form.ace_anchor_or_not.data,
+            agent=form.agent.data
         )
         try:
             db.session.add(anchor)
