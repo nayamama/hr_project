@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileRequired
-from wtforms import StringField, SubmitField, DateField, BooleanField, DecimalField, SelectField
+from wtforms import StringField, SubmitField, DateField, BooleanField, DecimalField, SelectField, TextAreaField
 from wtforms.validators import DataRequired
 from wtforms import validators
 from wtforms.ext.sqlalchemy.fields import QuerySelectField
@@ -66,3 +66,21 @@ class SearchForm(FlaskForm):
     """
     search = StringField('please input the anchor name')
     submit = SubmitField('Search')
+
+class PayrollForm(FlaskForm):
+    """
+    Form to get information of payrolls
+    """
+    date = DateField('Month', format='%Y-%m-%d')
+    name = StringField('Name', validators=[DataRequired()])
+    momo_number = StringField('MOMO #', validators=[DataRequired()])
+    coins = DecimalField('Coins', validators=[validators.optional()])
+    guild_division = DecimalField('Guild Division', validators=[validators.optional()])
+    anchor_reward = DecimalField('Reward', validators=[validators.optional()])
+    profit = DecimalField('Profit', validators=[validators.optional()])
+    penalty = DecimalField('Penalty', validators=[validators.optional()])
+    basic_salary = DecimalField('Basic Salary', validators=[validators.optional()])
+    percentage = DecimalField('Percentage', validators=[validators.optional()])
+    ace_anchor_or_not = BooleanField('Whether Ace anchor or not', validators=[validators.Optional()])
+    salary = DecimalField('Salary', validators=[validators.optional()])
+    comment = TextAreaField('Comments')

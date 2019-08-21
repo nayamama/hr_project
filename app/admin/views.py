@@ -359,7 +359,7 @@ def add_anchor():
     if form.validate_on_submit():
         anchor = Anchor(
             name=form.name.data,
-            entry_time=datetime.datetime.now().strftime("%Y-%m-%d"),
+            entry_time=datetime.datetime.today().strftime("%Y-%m-%d"),
             address=form.address.data,
             momo_number=form.momo_number.data,
             mobile_number=form.mobile_number.data,

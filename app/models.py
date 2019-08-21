@@ -112,7 +112,8 @@ class Anchor(db.Model):
     #owned_salary = db.Column(db.Float, default=0.0)
     ace_anchor_or_not = db.Column(db.Boolean)
     agent = db.Column(db.String(60), nullable=True)
-    payroll_id = db.Column(db.Integer, db.ForeignKey('payrolls.id'))
+    #payroll_id = db.Column(db.Integer, db.ForeignKey('payrolls.id'))
+    payrolls = db.relationship('Payroll', backref='host', lazy='dynamic')
 
     def __repr__(self):
         return '<Anchor: {}>'.format(self.name)
@@ -124,10 +125,22 @@ class Payroll(db.Model):
     __tablename__ = "payrolls"
 
     id = db.Column(db.Integer, primary_key=True)
-    date = db.Column(db.DateTime, nullable=False)
+    date = db.Column(db.DateTime, nullable=True)
+    #name = db.Column(db.String(60), index=True, nullable=False)
+    #momo_number = db.Column(db.String(60), nullable=True)
+    coins = db.Column(db.Float, default=0.0, nullable=True)
+    guild_division = db.Column(db.Float, default=0.0, nullable=True)
+    anchor_reward = db.Column(db.Float, default=0.0, nullable=True)
     profit = db.Column(db.Float, default=0.0, nullable=True)
-    commission = db.Column(db.Float, default=0.0, nullable=True)
-    salary = db.Column(db.Float, default=0.0, nullable=True)
-    employees = db.relationship('Anchor', backref='payroll',
-                                lazy='dynamic')
+    penalty = db.Column(db.Float, default=0.0, nullable=True)
+    #basic_salary = db.Column(db.Float, nullable=True)
+    #percentage = db.Column(db.Float, default=0.0, nullable=True)
+    #ace_anchor_or_not = db.Column(db.Boolean)
+    salary = db.Column(db.Float, nullable=True)
+    comment = db.Column(db.Text, nullable=True)
+    #employees = db.relationship('Anchor', backref='payroll', lazy='dynamic')
+    anchor_id = db.Column(db.Integer, db.ForeignKey('anchors.id'))
+
+    def __repr__(self):
+        return '<Payroll: {}: {}>'.format(self.anchor_id, self.date)
 
