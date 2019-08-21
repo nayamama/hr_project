@@ -1,11 +1,17 @@
+# -*- coding: UTF-8 -*-
 import os
 from flask import abort, flash, redirect, render_template, url_for, request
 from flask_login import current_user, login_required
 from werkzeug.utils import secure_filename
 import datetime
+import string
+import pandas as pd
+from sqlalchemy import create_engine
+import psycopg2
+import re
 
 from . import admin
-from forms import DepartmentForm, RoleForm, EmployeeAssignForm, AnchorForm, SearchForm
+from forms import DepartmentForm, RoleForm, EmployeeAssignForm, AnchorForm, SearchForm, UploadForm
 from .. import db
 from ..models import Department, Role, Employee, Anchor
 from helper import get_system_info
@@ -501,3 +507,36 @@ def search_result(query):
 def system_info():
     used_cpu_percent, used_disk_percent, free_disk_size = get_system_info()
     return render_template('admin/system.html', cpu=used_cpu_percent, disk=used_disk_percent, free=free_disk_size)
+
+@admin.route('/upload', methods=['POST', 'GET'])
+@login_required
+def upload():
+    """
+    upload monthly report to local host
+    """
+    check_admin()
+    
+    form = UploadForm()
+    if form.validate_on_submit():
+        f = form.upload_file.data
+        #filename = secure_filename(f.filename)
+        # remove punctuation from file name
+        #filename = filename.translate(None, string.punctuation)
+        filename = f.filename
+        filename = filename.replace('-', '')
+        UPLOAD_FOLDER = '/home/qi/projects/maomao_files'
+        path_name = os.path.join(UPLOAD_FOLDER, filename)
+        if not os.path.exists(path_name):
+            f.save(path_name)
+        else:
+            flash("The file already exists.")
+            return render_template('admin/upload.html', form=form)
+        
+        df = pd.read_excel(path_name, encoding = "utf-8")
+        df = df.rename(columns=lambda x: re.sub(u'\(元\)', '', x))
+        engine = create_engine('postgresql://stage_test:1234abcd@192.168.1.76:5432/stage_db')
+        df.to_sql(filename, engine)
+        
+        flash('You have successfully upload the file.')
+        return render_template('admin/upload.html', form=form)
+    return render_template('admin/upload.html', form=form)

@@ -49,7 +49,7 @@ class AnchorForm(FlaskForm):
     live_time = DecimalField('Live Time', validators=[validators.Optional()])
     live_session = SelectField(
         'Live Session',
-        choices=[('morning', 'Morning'), ('afternoon', 'Afternoon'), ('evening', 'Evening'), ('night', 'Night')]
+        choices=[('', '---'),('morning', 'Morning'), ('afternoon', 'Afternoon'), ('evening', 'Evening'), ('night', 'Night')]
     )
     percentage = DecimalField('Proportion of Commission', validators=[validators.Optional()])
     ace_anchor_or_not = BooleanField('Whether Ace anchor or not', validators=[validators.Optional()])
@@ -84,3 +84,10 @@ class PayrollForm(FlaskForm):
     ace_anchor_or_not = BooleanField('Whether Ace anchor or not', validators=[validators.Optional()])
     salary = DecimalField('Salary', validators=[validators.optional()])
     comment = TextAreaField('Comments')
+
+class UploadForm(FlaskForm):
+    """
+    Form to upload monthly report
+    """
+    upload_file = FileField()
+    submit = SubmitField('Upload')
