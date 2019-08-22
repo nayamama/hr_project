@@ -11,7 +11,7 @@ import psycopg2
 import re
 
 from . import admin
-from forms import DepartmentForm, RoleForm, EmployeeAssignForm, AnchorForm, SearchForm, UploadForm, SearchPayrollForm
+from forms import DepartmentForm, RoleForm, EmployeeAssignForm, AnchorForm, SearchForm, UploadForm, SearchPayrollForm, PayrollForm
 from .. import db
 from ..models import Department, Role, Employee, Anchor, Payroll
 from helper import get_system_info
@@ -519,26 +519,41 @@ def upload():
     form = UploadForm()
     if form.validate_on_submit():
         f = form.upload_file.data
-        #filename = secure_filename(f.filename)
-        # remove punctuation from file name
-        #filename = filename.translate(None, string.punctuation)
         filename = f.filename
         filename = filename.replace('-', '')
         UPLOAD_FOLDER = '/home/qi/projects/maomao_files'
         path_name = os.path.join(UPLOAD_FOLDER, filename)
         if not os.path.exists(path_name):
             f.save(path_name)
+        '''
         else:
             flash("The file already exists.")
             return render_template('admin/upload.html', form=form)
+        '''
+            df = pd.read_excel(path_name, encoding = "utf-8")
+            df = df.rename(columns=lambda x: re.sub(u'\(元\)', '', x))
+            engine = create_engine('postgresql://stage_test:1234abcd@192.168.1.76:5432/stage_db')
 
-        df = pd.read_excel(path_name, encoding = "utf-8")
-        df = df.rename(columns=lambda x: re.sub(u'\(元\)', '', x))
-        engine = create_engine('postgresql://stage_test:1234abcd@192.168.1.76:5432/stage_db')
-        df.to_sql(filename, engine)
+            tablename = 'raw_data_' + datetime.datetime.today().strftime('%Y%m')
+            df.to_sql(tablename, engine)
 
-        flash('You have successfully upload the file.')
-        return render_template('admin/upload.html', form=form)
+            connection = engine.connect()
+            trans = connection.begin()
+            try:
+                query = """insert into payrolls (date, anchor_reward, coins, guild_division, anchor_momo) 
+                            select  date_trunc('month', to_date(月份, 'YYYY-MM')), 播主奖励, 总陌币, 公会分成金额, 陌陌号 
+                            from {}""".format(tablename)
+                connection.execute(query)
+                trans.commit()
+                flash('You have successfully upload the file.')
+            except Exception as e:
+                trans.rollback()
+                raise
+            finally:
+                connection.close()
+        else:
+            flash("The file already exists.")
+            #return render_template('admin/upload.html', form=form)
     return render_template('admin/upload.html', form=form)
 
 @admin.route('/search_payroll', methods=['GET', 'POST'])
@@ -554,7 +569,33 @@ def search_payroll():
         print d[0]
         print type(d[0])
     """
-    form.date.choices = [(d[0].strftime('%Y%m'), d[0].strftime('%Y-%m')) for d in Payroll.query.with_entities(Payroll.date).distinct()]
+    form.date.choices = [(int(d[0].strftime('%Y%m')), int(d[0].strftime('%Y%m'))) for d in Payroll.query.with_entities(Payroll.date).distinct()]
     if request.method == "POST" and form.validate_on_submit():
-        return redirect((url_for('admin.search_payroll_result', query=form.search.data)))
+        #print type(form.date.data)
+        return redirect((url_for('admin.search_payroll_result', query=form.search.data, date=form.date.data)))
     return render_template('admin/search/search.html', form=form)
+
+
+@admin.route('/search_payroll/<query>/<date>', methods=['GET', 'POST'])
+@login_required
+def search_payroll_result(query, date):
+    date = datetime.datetime.strptime(date, '%Y%m')
+    payroll = Payroll.query.filter_by(anchor_momo=query).filter_by(date=date).first()
+    if not payroll:
+        flash('No results found.')
+        return redirect(url_for('admin.search_payroll'))
+    else:
+        form = PayrollForm()
+        form.date.data = payroll.date
+        form.name.data = payroll.host.name
+        form.momo_number.data = payroll.anchor_momo
+        form.coins.data = payroll.coins
+        form.guild_division.data = payroll.guild_division
+        form.anchor_reward.data = payroll.anchor_reward
+        form.profit.data = payroll.profit
+        form.penalty.data = payroll.penalty
+        form.basic_salary.data = payroll.host.basic_salary
+        form.percentage.data = payroll.host.percentage
+        form.ace_anchor_or_not.data = payroll.host.ace_anchor_or_not
+        
+        return render_template('admin/search/result.html', query=query, form=form)

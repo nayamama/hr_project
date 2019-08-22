@@ -96,9 +96,9 @@ class SearchPayrollForm(FlaskForm):
     """
     Form for searching payroll information from momo_number and specific month
     """
-    search = StringField('please input the anchor name')
+    search = StringField('please input the anchor MOMO number')
     date = SelectField(
         'Month',
-        coerce=int
+        coerce=int,
     )
     submit = SubmitField('Search')
