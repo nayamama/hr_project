@@ -100,7 +100,7 @@ class Anchor(db.Model):
     name = db.Column(db.String(60), index=True, nullable=False)
     entry_time = db.Column(db.DateTime, nullable=True)
     address = db.Column(db.String(120))
-    momo_number = db.Column(db.String(60), index=True, nullable=True)
+    momo_number = db.Column(db.String(60), index=True, nullable=True, unique=True)
     mobile_number = db.Column(db.String(60), nullable=True)
     id_number = db.Column(db.String(60), nullable=True)
     basic_salary_or_not = db.Column(db.Boolean)
@@ -139,7 +139,7 @@ class Payroll(db.Model):
     salary = db.Column(db.Float, nullable=True)
     comment = db.Column(db.Text, nullable=True)
     #employees = db.relationship('Anchor', backref='payroll', lazy='dynamic')
-    anchor_id = db.Column(db.Integer, db.ForeignKey('anchors.id'))
+    anchor_momo = db.Column(db.String(60), db.ForeignKey('anchors.momo_number'))
 
     def __repr__(self):
         return '<Payroll: {}: {}>'.format(self.anchor_id, self.date)
