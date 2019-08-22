@@ -91,3 +91,14 @@ class UploadForm(FlaskForm):
     """
     upload_file = FileField()
     submit = SubmitField('Upload')
+
+class SearchPayrollForm(FlaskForm):
+    """
+    Form for searching payroll information from momo_number and specific month
+    """
+    search = StringField('please input the anchor name')
+    date = SelectField(
+        'Month',
+        coerce=int
+    )
+    submit = SubmitField('Search')

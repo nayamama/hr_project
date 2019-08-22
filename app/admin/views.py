@@ -11,9 +11,9 @@ import psycopg2
 import re
 
 from . import admin
-from forms import DepartmentForm, RoleForm, EmployeeAssignForm, AnchorForm, SearchForm, UploadForm
+from forms import DepartmentForm, RoleForm, EmployeeAssignForm, AnchorForm, SearchForm, UploadForm, SearchPayrollForm
 from .. import db
-from ..models import Department, Role, Employee, Anchor
+from ..models import Department, Role, Employee, Anchor, Payroll
 from helper import get_system_info
 
 
@@ -531,12 +531,30 @@ def upload():
         else:
             flash("The file already exists.")
             return render_template('admin/upload.html', form=form)
-        
+
         df = pd.read_excel(path_name, encoding = "utf-8")
         df = df.rename(columns=lambda x: re.sub(u'\(元\)', '', x))
         engine = create_engine('postgresql://stage_test:1234abcd@192.168.1.76:5432/stage_db')
         df.to_sql(filename, engine)
-        
+
         flash('You have successfully upload the file.')
         return render_template('admin/upload.html', form=form)
     return render_template('admin/upload.html', form=form)
+
+@admin.route('/search_payroll', methods=['GET', 'POST'])
+@login_required
+def search_payroll():
+    """
+    Search the payroll information of the anchor
+    """
+    check_admin()
+    form = SearchPayrollForm(request.form)
+    """
+    for d in Payroll.query.with_entities(Payroll.date).distinct():
+        print d[0]
+        print type(d[0])
+    """
+    form.date.choices = [(d[0].strftime('%Y%m'), d[0].strftime('%Y-%m')) for d in Payroll.query.with_entities(Payroll.date).distinct()]
+    if request.method == "POST" and form.validate_on_submit():
+        return redirect((url_for('admin.search_payroll_result', query=form.search.data)))
+    return render_template('admin/search/search.html', form=form)
