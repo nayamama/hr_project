@@ -491,7 +491,7 @@ def search():
 @admin.route('/results/<query>')
 @login_required
 def search_result(query):
-    result = Anchor.query.filter_by(name=query).first()
+    result = Anchor.query.filter_by(momo_number=query).first()
     if not result:
         flash('No results found.')
         return redirect(url_for('admin.search'))
@@ -525,11 +525,6 @@ def upload():
         path_name = os.path.join(UPLOAD_FOLDER, filename)
         if not os.path.exists(path_name):
             f.save(path_name)
-        '''
-        else:
-            flash("The file already exists.")
-            return render_template('admin/upload.html', form=form)
-        '''
             df = pd.read_excel(path_name, encoding = "utf-8")
             df = df.rename(columns=lambda x: re.sub(u'\(元\)', '', x))
             engine = create_engine('postgresql://stage_test:1234abcd@192.168.1.76:5432/stage_db')
@@ -585,7 +580,12 @@ def search_payroll_result(query, date):
         flash('No results found.')
         return redirect(url_for('admin.search_payroll'))
     else:
-        form = PayrollForm()
+        form = PayrollForm(obj=payroll)
+        if form.validate_on_submit():
+            payroll.comment = form.comment.data
+            db.session.add(payroll)
+            db.session.commit()
+
         form.date.data = payroll.date
         form.name.data = payroll.host.name
         form.momo_number.data = payroll.anchor_momo
@@ -598,4 +598,4 @@ def search_payroll_result(query, date):
         form.percentage.data = payroll.host.percentage
         form.ace_anchor_or_not.data = payroll.host.ace_anchor_or_not
         
-        return render_template('admin/search/result.html', query=query, form=form)
+    return render_template('admin/search/result.html', query=query, form=form)

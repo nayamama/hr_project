@@ -84,6 +84,7 @@ class PayrollForm(FlaskForm):
     ace_anchor_or_not = BooleanField('Whether Ace anchor or not', validators=[validators.Optional()])
     salary = DecimalField('Salary', validators=[validators.optional()])
     comment = TextAreaField('Comments')
+    submit = SubmitField('Submit')
 
 class UploadForm(FlaskForm):
     """
