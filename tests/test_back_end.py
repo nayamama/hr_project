@@ -15,7 +15,7 @@ class TestBase(TestCase):
         config_name = 'test'
         app = create_app(config_name)
         app.config.update(
-            SQLALCHEMY_DATABASE_URI='mysql://stage_admin:password@10.229.0.101/stage_db'
+            SQLALCHEMY_DATABASE_URI='postgresql://stage_test:1234abcd@192.168.1.76:5432/stage_db'
         )
         return app
 

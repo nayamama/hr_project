@@ -48,7 +48,7 @@ class TestBase(LiveServerTestCase):
     def create_app(self):
         config_name = 'test'
         app = create_app(config_name)
-        app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://stage_admin:password@10.229.0.101/stage_db'
+        app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://stage_test:1234abcd@192.168.1.76:5432/stage_db'
         app.config['LIVESERVER_PORT'] = 8943
         '''
         app.config.update(
