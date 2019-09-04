@@ -114,6 +114,7 @@ class Anchor(db.Model):
     agent = db.Column(db.String(60), nullable=True)
     #payroll_id = db.Column(db.Integer, db.ForeignKey('payrolls.id'))
     payrolls = db.relationship('Payroll', backref='host', lazy='dynamic')
+    penalties = db.relationship('Penalty', backref='host', lazy='dynamic')
 
     def __repr__(self):
         return '<Anchor: {}>'.format(self.name)
@@ -142,5 +143,20 @@ class Payroll(db.Model):
     anchor_momo = db.Column(db.String(60), db.ForeignKey('anchors.momo_number'))
 
     def __repr__(self):
-        return '<Payroll: {}: {}>'.format(self.anchor_id, self.date)
+        return '<Payroll: {}: {}>'.format(self.anchor_momo, self.date)
+
+class Penalty(db.Model):
+    """
+    Create a penalty table
+    """
+    __tablename__ = "penalties"
+
+    id = db.Column(db.Integer, primary_key=True)
+    date = db.Column(db.DateTime, nullable=True)
+    anchor_momo = db.Column(db.String(60), db.ForeignKey('anchors.momo_number'))
+    amount = db.Column(db.Float, nullable=True)
+
+    def __repr__(self):
+        return '<Penalty: {}: {} on {}'.format(self.anchor_momo, self.amount, self.date)
+
 
