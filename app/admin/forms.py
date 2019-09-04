@@ -103,3 +103,12 @@ class SearchPayrollForm(FlaskForm):
         coerce=int,
     )
     submit = SubmitField('Search')
+
+class PenaltyForm(FlaskForm):
+    """
+    Form to input penalty amount
+    """
+    momo_number = StringField('MOMO #', validators=[DataRequired()])
+    amount = DecimalField('Salary', validators=[validators.optional()])
+
+
