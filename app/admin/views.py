@@ -527,9 +527,17 @@ def upload():
             f.save(path_name)
             df = pd.read_excel(path_name, encoding = "utf-8")
             df = df.rename(columns=lambda x: re.sub(u'\(元\)', '', x))
+            '''
+            # python 2 cannot deal with 'str' and 'unicode' comparision in pandas, but python 3 can handle it
+            df = df.drop(df[df[u"结算方式"] == u"对私".encode('utf8')].index)
+            df = df[df[u"结算方式"].astype('unicode') == u"对公"]
+            print '#######################'
+            print df.head()
+            print '#######################'
+            '''
             engine = create_engine('postgresql://stage_test:1234abcd@192.168.1.76:5432/stage_db')
 
-            tablename = 'raw_data_' + datetime.datetime.today().strftime('%Y%m')
+            tablename = 'raw_data_' + datetime.datetime.today().strftime('%Y%m%d_%H%M')
             df.to_sql(tablename, engine)
 
             connection = engine.connect()
@@ -546,6 +554,7 @@ def upload():
                 raise
             finally:
                 connection.close()
+            
         else:
             flash("The file already exists.")
             #return render_template('admin/upload.html', form=form)
@@ -581,6 +590,8 @@ def search_payroll_result(query, date):
         return redirect(url_for('admin.search_payroll'))
     else:
         form = PayrollForm(obj=payroll)
+        del form.penalty
+
         if form.validate_on_submit():
             payroll.comment = form.comment.data
             db.session.add(payroll)
@@ -593,9 +604,23 @@ def search_payroll_result(query, date):
         form.guild_division.data = payroll.guild_division
         form.anchor_reward.data = payroll.anchor_reward
         form.profit.data = payroll.profit
-        form.penalty.data = payroll.penalty
+        #form.penalty.data = payroll.penalty
         form.basic_salary.data = payroll.host.basic_salary
         form.percentage.data = payroll.host.percentage
         form.ace_anchor_or_not.data = payroll.host.ace_anchor_or_not
-        
-    return render_template('admin/search/result.html', query=query, form=form)
+
+        penalties = payroll.host.penalties
+        ps = []
+        penalty_sum = 0
+        for p in penalties:
+            if p.date.year == date.year and p.date.month == date.month:
+                ps.append((p.date, p.amount))
+                penalty_sum += p.amount
+    
+        if payroll.host.ace_anchor_or_not:
+            salary = round(payroll.coins * payroll.host.percentage * 0.1 - penalty_sum, 2)
+        else:
+            salary = round(payroll.coins * payroll.host.percentage * 0.1 * 0.94 - penalty_sum, 2)
+         
+    return render_template('admin/search/result.html', query=query, form=form, 
+                            salary=salary, penalty_list=ps)

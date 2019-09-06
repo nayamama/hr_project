@@ -1,3 +1,4 @@
+# -*- coding: UTF-8 -*-
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileRequired
 from wtforms import StringField, SubmitField, DateField, BooleanField, DecimalField, SelectField, TextAreaField
@@ -108,7 +109,8 @@ class PenaltyForm(FlaskForm):
     """
     Form to input penalty amount
     """
-    momo_number = StringField('MOMO #', validators=[DataRequired()])
-    amount = DecimalField('Salary', validators=[validators.optional()])
+    momo_number = StringField(u'陌陌号', validators=[DataRequired()])
+    amount = DecimalField(u'数额', validators=[validators.optional()])
+    submit = SubmitField(u'提交')
 
 

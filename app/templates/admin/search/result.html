@@ -10,6 +10,23 @@
 						<h1>{{ form.momo_number.data }}</h1>
             <br/>
             {{ wtf.quick_form(form) }}
+            <br/>
+            <h3> Penalty </h3>
+            <table style="width:50%">
+              <tr>
+                <th>date</th>
+                <th>amount</th>
+              </tr>
+              {% for p in penalty_list %}
+                <tr>
+                  <td>{{ p[0] }}</td>
+                  <td>{{ p[1] }}</td>
+                </tr>
+              {%endfor%}
+            </table> 
+            <br/>
+            <hr>
+            <h1> Salary: {{ salary }} </h1>
         </div>
       </div>
     </div>

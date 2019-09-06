@@ -1,3 +1,4 @@
+# -*- coding: UTF-8 -*-
 import os
 import datetime
 from flask import render_template, abort, flash, redirect, url_for, request
@@ -5,8 +6,8 @@ from flask_login import current_user, login_required
 from werkzeug.utils import secure_filename
 
 from . import home
-from ..admin.forms import AnchorForm
-from ..models import Anchor
+from ..admin.forms import AnchorForm, PenaltyForm
+from ..models import Anchor, Penalty
 from .. import db
 
 
@@ -80,3 +81,30 @@ def add_anchor():
     return render_template('admin/anchors/anchor.html', action="Add", form=form,
                            add_anchor=add_anchor, title="Add Anchor")
 
+
+@home.route('/dashboard/penalty_form', methods=['GET', 'POST'])
+@login_required
+def add_penalty():
+    """
+    Add a penalty input
+    """
+    form = PenaltyForm()
+
+    if form.validate_on_submit():
+        penalty = Penalty(
+            anchor_momo=form.momo_number.data,
+            date=datetime.date.today().strftime("%Y-%m-%d"),
+            amount=form.amount.data
+        )
+        try:
+            db.session.add(penalty)
+            db.session.commit()
+
+            flash(u'此罚款记录已成功录入')
+        except:
+            flash(u'错误:此陌陌号不存在, 请验证输入的陌陌号重试')
+
+        return redirect(url_for('home.dashboard'))
+
+    return render_template('home/add_penalty.html', form=form,
+                            title="Add Penalty")
