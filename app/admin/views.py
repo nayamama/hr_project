@@ -11,10 +11,10 @@ import psycopg2
 import re
 
 from . import admin
-from forms import DepartmentForm, RoleForm, EmployeeAssignForm, AnchorForm, SearchForm, UploadForm, SearchPayrollForm, PayrollForm
+from .forms import DepartmentForm, RoleForm, EmployeeAssignForm, AnchorForm, SearchForm, UploadForm, SearchPayrollForm, PayrollForm
 from .. import db
 from ..models import Department, Role, Employee, Anchor, Payroll
-from helper import get_system_info
+from .helper import get_system_info
 
 
 def check_admin():
@@ -382,7 +382,9 @@ def add_anchor():
             db.session.add(anchor)
             db.session.commit()
 
-            directory = '/home/qi/projects/maomao_files/' + form.momo_number.data
+            upload_folder = os.getenv('UPLOAD_FOLDER')
+
+            directory = upload_folder + form.momo_number.data
             if not os.path.exists(directory):
                 os.mkdir(directory)
 
@@ -428,8 +430,8 @@ def edit_anchor(id):
         if form.photo.data:
             f = form.photo.data
             filename = secure_filename(f.filename)
-            UPLOAD_FOLDER = '/home/qi/projects/maomao_files'
-            f.save(os.path.join(UPLOAD_FOLDER, form.name.data, filename))
+            upload_folder = os.getenv('UPLOAD_FOLDER')
+            f.save(os.path.join(upload_folder, form.name.data, filename))
 
         db.session.add(anchor)
         db.session.commit()
@@ -521,8 +523,9 @@ def upload():
         f = form.upload_file.data
         filename = f.filename
         filename = filename.replace('-', '')
-        UPLOAD_FOLDER = '/home/qi/projects/maomao_files'
-        path_name = os.path.join(UPLOAD_FOLDER, filename)
+        # UPLOAD_FOLDER = '/home/qi/projects/maomao_files'
+        upload_folder = os.getenv('UPLOAD_FOLDER')
+        path_name = os.path.join(upload_folder, filename)
         if not os.path.exists(path_name):
             f.save(path_name)
             df = pd.read_excel(path_name, encoding = "utf-8")

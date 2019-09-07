@@ -22,7 +22,7 @@
               {% if current_user.is_admin %}
                 <a class="navbar-brand topnav" href="{{ url_for('admin.search') }}">
                     <i class="fa fa-search"></i>
-                    Search Anchor
+                    主播检索
                     </a>
                 <!--<div class="navbar-brand topnav">
                     <i class="glyphicon glyphicon-search"></i>
@@ -30,11 +30,11 @@
                 </div>-->
                 <a class="navbar-brand topnav" href="{{ url_for('admin.add_anchor') }}">
                     <i class="fa fa-plus"></i>
-                    Add Anchor 
+                    添加主播 
                 </a>
                 <a class="navbar-brand topnav" href="{{ url_for('admin.upload') }}">
                     <i class="fa fa-upload"></i>
-                    Upload  
+                    上传  
                 </a>
               {% endif %}
           </div>
